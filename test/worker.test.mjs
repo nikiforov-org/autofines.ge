@@ -66,6 +66,9 @@ function stubFetch({ fines = [FINE], telegramStatus = 200 } = {}) {
     }
 
     if (target.includes("api.telegram.org")) {
+      if (/answerCallbackQuery|pinChatMessage|setWebhook|setMyCommands/.test(target)) {
+        return new Response(JSON.stringify({ ok: true, result: {} }));
+      }
       sent.push(JSON.parse(init.body));
       return new Response(JSON.stringify({ ok: telegramStatus === 200 }), { status: telegramStatus });
     }
@@ -246,8 +249,53 @@ test("кнопка в Telegram запускает проверку", async () =>
     const response = await worker.fetch(request, env(kv, { TRIGGER_SECRET: "s3cret" }), ctx);
     assert.equal(response.status, 200);
     await done();
-    assert.equal(sent.length, 1);
-    assert.match(sent[0].text, /Новый штраф/);
+    assert.equal(sent.length, 1, "ручная проверка присылает сам штраф, а не сводку");
+    assert.match(sent[0].text, /A354OC797/);
+    assert.ok(sent[0].reply_markup?.inline_keyboard, "и кнопку оплаты вместе с ним");
+  } finally {
+    restore();
+  }
+});
+
+test("ручная проверка показывает штраф даже когда он уже известен", async () => {
+  const { default: worker } = await import("../src/worker.js");
+  const kv = memoryKv();
+  let stub = stubFetch();
+  try { await runCheck(env(kv)); } finally { stub.restore(); }
+
+  stub = stubFetch();
+  const { ctx, done } = testCtx();
+  try {
+    const request = new Request("https://x/telegram", {
+      method: "POST",
+      headers: { "X-Telegram-Bot-Api-Secret-Token": "s3cret" },
+      body: JSON.stringify({ message: { chat: { id: "chat" }, text: "/check" } }),
+    });
+    await worker.fetch(request, env(kv, { TRIGGER_SECRET: "s3cret" }), ctx);
+    await done();
+    assert.equal(stub.sent.length, 1, "cron бы промолчал, кнопка — нет");
+    assert.ok(stub.sent[0].reply_markup?.inline_keyboard, "с кнопкой оплаты");
+  } finally {
+    stub.restore();
+  }
+});
+
+test("нажатие закреплённой инлайн-кнопки тоже запускает проверку", async () => {
+  const { default: worker } = await import("../src/worker.js");
+  const kv = memoryKv();
+  const { sent, restore } = stubFetch();
+  const { ctx, done } = testCtx();
+  try {
+    const request = new Request("https://x/telegram", {
+      method: "POST",
+      headers: { "X-Telegram-Bot-Api-Secret-Token": "s3cret" },
+      body: JSON.stringify({
+        callback_query: { id: "cb1", data: "check", message: { chat: { id: "chat" } } },
+      }),
+    });
+    assert.equal((await worker.fetch(request, env(kv, { TRIGGER_SECRET: "s3cret" }), ctx)).status, 200);
+    await done();
+    assert.ok(sent.some((m) => /A354OC797/.test(m.text ?? "")), "штраф должен уйти");
   } finally {
     restore();
   }
@@ -267,7 +315,8 @@ test("команда /check работает так же, как кнопка", 
     await worker.fetch(request, env(kv, { TRIGGER_SECRET: "s3cret" }), ctx);
     await done();
     assert.equal(sent.length, 1, "пустая проверка тоже должна ответить");
-    assert.match(sent[0].text, /неоплаченных штрафов нет/);
+    assert.match(sent[0].text, /Неоплаченных штрафов нет/);
+    assert.ok(sent[0].reply_markup?.keyboard, "и переприклеить клавиатуру");
   } finally {
     restore();
   }
