@@ -16,6 +16,17 @@ const STATE_KEY = "state";
 /** Подпись кнопки на постоянной клавиатуре бота. */
 const CHECK_BUTTON = "🔄 Проверить штрафы";
 
+/**
+ * Клавиатура отваливается, если её не подтверждать: Telegram показывает её
+ * ровно до тех пор, пока бот присылает сообщения с этой разметкой. Поэтому
+ * прикладываем её к последнему сообщению каждой ручной проверки.
+ */
+const KEYBOARD = {
+  keyboard: [[{ text: CHECK_BUTTON }]],
+  resize_keyboard: true,
+  is_persistent: true,
+};
+
 const flag = (value) => ["1", "true", "yes", "on"].includes(String(value ?? "").trim().toLowerCase());
 
 // В wrangler.toml PLATES — массив, но в .dev.vars и в секретах бывает только
@@ -77,20 +88,23 @@ export async function runCheck(env, overrides = {}) {
   return report;
 }
 
-/** Короткий итог ручной проверки — чтобы нажатие кнопки не оставалось без ответа. */
+/**
+ * Ручная проверка. В отличие от cron присылает все висящие штрафы, а не только
+ * новые: кнопку жмут именно чтобы увидеть, что сейчас в системе и что можно
+ * оплатить. Последним сообщением переприклеивается клавиатура.
+ */
 async function reportManualRun(env) {
   try {
-    const report = await runCheck(env);
-    const found = Object.values(report.plates).reduce((sum, p) => sum + p.found, 0);
-    if (report.sent === 0) {
-      const text = found === 0
-        ? "✅ Проверил: неоплаченных штрафов нет."
-        : `✅ Проверил: штрафов ${found}, новых нет.`;
-      await sendMessage(env, text);
-    }
+    const report = await runCheck(env, { notifyAlways: true });
+    const found = Object.values(report.plates).reduce((sum, plate) => sum + plate.found, 0);
+    if (found === 0) await sendMessage(env, "✅ Неоплаченных штрафов нет.", null, KEYBOARD);
   } catch (error) {
-    await sendMessage(env, `⚠️ Проверка упала:\n<code>${String(error.message).slice(0, 500)}</code>`)
-      .catch(() => {});
+    await sendMessage(
+      env,
+      `⚠️ Проверка упала:\n<code>${String(error.message).slice(0, 500)}</code>`,
+      null,
+      KEYBOARD,
+    ).catch(() => {});
   }
 }
 
@@ -129,21 +143,44 @@ export default {
         await callTelegram(env, "setWebhook", {
           url: `${url.origin}/telegram`,
           secret_token: env.TRIGGER_SECRET,
-          allowed_updates: ["message"],
+          allowed_updates: ["message", "callback_query"],
         });
+        // Команду видит только владелец: для всех остальных меню бота пустое.
         await callTelegram(env, "setMyCommands", {
           commands: [{ command: "check", description: "Проверить штрафы сейчас" }],
+          scope: { type: "chat", chat_id: Number(env.TELEGRAM_CHAT_ID) },
         });
+        await callTelegram(env, "setMyCommands", { commands: [], scope: { type: "default" } })
+          .catch(() => {});
+        await callTelegram(env, "setMyDescription", {
+          description: "Личный бот. Посторонним не отвечает.",
+        }).catch(() => {});
+        // Клавиатура: живёт, пока Telegram её не свернёт.
         await callTelegram(env, "sendMessage", {
           chat_id: env.TELEGRAM_CHAT_ID,
           text: "Кнопка проверки готова.",
-          reply_markup: {
-            keyboard: [[{ text: CHECK_BUTTON }]],
-            resize_keyboard: true,
-            is_persistent: true,
-          },
+          reply_markup: KEYBOARD,
         });
-        return Response.json({ ok: true, webhook: `${url.origin}/telegram`, button: CHECK_BUTTON });
+
+        // Закреплённое сообщение с инлайн-кнопкой: висит вверху чата всегда.
+        const pinned = await callTelegram(env, "sendMessage", {
+          chat_id: env.TELEGRAM_CHAT_ID,
+          text: "<b>Штрафы МВД Грузии</b>\nПроверка каждый день в 12:00 по Тбилиси.",
+          parse_mode: "HTML",
+          reply_markup: { inline_keyboard: [[{ text: CHECK_BUTTON, callback_data: "check" }]] },
+        });
+        await callTelegram(env, "pinChatMessage", {
+          chat_id: env.TELEGRAM_CHAT_ID,
+          message_id: pinned.message_id,
+          disable_notification: true,
+        }).catch(() => {});
+
+        return Response.json({
+          ok: true,
+          webhook: `${url.origin}/telegram`,
+          button: CHECK_BUTTON,
+          pinnedMessageId: pinned.message_id,
+        });
       } catch (error) {
         return Response.json({ error: String(error.message) }, { status: 500 });
       }
@@ -159,13 +196,23 @@ export default {
       }
 
       const update = await request.json().catch(() => ({}));
-      const message = update.message ?? {};
-      const text = (message.text ?? "").trim();
+      const callback = update.callback_query;
+      const message = callback?.message ?? update.message ?? {};
+      const text = (callback?.data ?? update.message?.text ?? "").trim();
       // Отвечаем только своему чату: вебхук открыт наружу.
       const own = String(message.chat?.id ?? "") === String(env.TELEGRAM_CHAT_ID);
+      const asked = ["check", CHECK_BUTTON, "/check"].includes(text) || text.startsWith("/check@");
 
-      if (own && (text === CHECK_BUTTON || text === "/check" || text.startsWith("/check@"))) {
+      if (own && asked) {
         // Telegram ждёт быстрый 200, поэтому проверка уходит в фон.
+        if (callback) {
+          ctx.waitUntil(
+            callTelegram(env, "answerCallbackQuery", {
+              callback_query_id: callback.id,
+              text: "Проверяю…",
+            }).catch(() => {}),
+          );
+        }
         ctx.waitUntil(reportManualRun(env));
       }
       return new Response("ok\n");

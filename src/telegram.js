@@ -16,13 +16,15 @@ export async function callTelegram(env, method, payload = {}) {
   return data.result;
 }
 
-export async function sendMessage(env, text, payUrl = null) {
+export async function sendMessage(env, text, payUrl = null, keyboard = null) {
   const base = {
     chat_id: env.TELEGRAM_CHAT_ID,
     text,
     parse_mode: "HTML",
     disable_web_page_preview: true,
   };
+
+  if (keyboard) base.reply_markup = keyboard;
 
   const attempts = payUrl
     ? [
