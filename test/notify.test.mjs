@@ -129,11 +129,6 @@ test("адреса нет — ссылки тоже нет, прочерк", () 
   assert.match(text, /Место: —/);
 });
 
-test("подсказка про режим TBC Pay есть в карточке", () => {
-  const text = renderEvent({ type: "new", protocolNo: FINE.protocolNo, fine: FINE }, "A1");
-  assert.match(text, /bill and vehicle state number/);
-});
-
 test("HTML в данных экранируется", () => {
   const text = renderEvent(
     { type: "new", protocolNo: "X", fine: { ...FINE, protocolPlace: "<b>боом</b>" } },

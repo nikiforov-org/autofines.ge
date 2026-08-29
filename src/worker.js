@@ -7,7 +7,7 @@
  */
 
 import { fetchPlate, paymentUrl } from "./police.js";
-import { diffFines, renderEvent, TBC_PAY_URL } from "./notify.js";
+import { diffFines, renderEvent } from "./notify.js";
 import { geocodeCached } from "./geocode.js";
 import { sendMessage } from "./telegram.js";
 
