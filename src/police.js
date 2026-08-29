@@ -91,7 +91,7 @@ export async function fetchPlate(plate, { pageCap = 20 } = {}) {
   return found;
 }
 
-/** Ссылка на оплату — ровно та, что собирает police.ge в своей функции payment(). */
+/** Платёжная ссылка на протокол — ровно та, что собирает police.ge в функции payment(). */
 export function paymentUrl(protocolNo, plate) {
   const protocol = encodeURIComponent(protocolNo);
   return (

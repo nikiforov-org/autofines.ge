@@ -9,6 +9,35 @@ export const ARTICLES = {
   "125-1-0": "Превышение скорости на 15–30 км/ч",
 };
 
+// Сервис 1205 «Patrol Fine», режим «Payment with bill and vehicle state number»:
+// просит только номер квитанции и госномер, авторизация не нужна, комиссии нет.
+export const TBC_PAY_URL = "https://tbcpay.ge/en/services/jarimebi/patrulis-jarima";
+
+/**
+ * Адрес в базе МВД выглядит как «ქ. <город> <улица> N<дом> (<тип камеры>) <номер>».
+ * Геокодеры такую строку не берут: мешает префикс «ქ.», хвост с камерой и порядок,
+ * в котором город идёт раньше улицы. Приводим к виду «улица, город, Georgia» —
+ * в такой форме адрес находится.
+ */
+export function mapsQuery(place) {
+  const cleaned = String(place ?? "")
+    .replace(/\s*\([^)]*\)\s*\d*\s*$/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const parts = /^ქ\.\s*(\S+)\s+(.+)$/.exec(cleaned);
+  const address = parts ? `${parts[2]}, ${parts[1]}` : cleaned;
+  return /საქართველო|georgia/i.test(address) ? address : `${address}, Georgia`;
+}
+
+/**
+ * Адрес нарушения — ссылкой в карты. С координатами пин ставится точно;
+ * без них (геокодер не нашёл) остаётся текстовый поиск, который может промахнуться.
+ */
+export function mapsUrl(place, coords = null) {
+  const query = coords ? `${coords.lat},${coords.lon}` : mapsQuery(place);
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 const TITLES = {
   new: "🚨 Новый штраф",
   repeat: "🔁 Штраф не оплачен",
@@ -76,7 +105,7 @@ function pluralDays(count) {
   return "дней";
 }
 
-export function renderEvent(event, plate) {
+export function renderEvent(event, plate, coords = null) {
   if (event.type === "gone") {
     return (
       `✅ Штраф <code>${escapeHtml(event.protocolNo)}</code> по <b>${escapeHtml(plate)}</b> ` +
@@ -89,12 +118,18 @@ export function renderEvent(event, plate) {
   const russian = ARTICLES[fine.protocolLaw ?? ""];
   const law = russian ? `${escapeHtml(russian)}\n<i>${georgian}</i>` : georgian;
 
+  const place = fine.protocolPlace
+    ? `<a href="${mapsUrl(fine.protocolPlace, coords)}">${escapeHtml(fine.protocolPlace)}</a>`
+    : "—";
+
   const lines = [
-    `<b>${TITLES[event.type]} — ${escapeHtml(plate)}</b>`,
+    // Номер протокола и госномер — в <code>: в Telegram они копируются одним тапом,
+    // а форма TBC Pay просит ровно эти два поля.
+    `<b>${TITLES[event.type]}</b> — <code>${escapeHtml(plate)}</code>`,
     "",
     `Протокол: <code>${escapeHtml(fine.protocolNo)}</code>`,
     `Дата: ${ruDate(fine.violationDate || fine.protocolDate)}`,
-    `Место: ${escapeHtml(fine.protocolPlace || "—")}`,
+    `Место: ${place}`,
     `Статья: ${law}`,
     `Сумма: <b>${escapeHtml(fine.protocolAmount ?? "—")} ₾</b>`,
   ];
@@ -104,6 +139,8 @@ export function renderEvent(event, plate) {
     const tail = Number.isInteger(left) ? ` (осталось ${left} ${pluralDays(left)})` : "";
     lines.push(`Оплатить до: ${ruDate(fine.lastDate)}${tail}`);
   }
+
+  lines.push("", `<i>Не открылось — <a href="${TBC_PAY_URL}">TBC Pay</a>, режим «bill and vehicle state number».</i>`);
 
   return lines.join("\n");
 }

@@ -14,7 +14,7 @@ export async function sendMessage(env, text, payUrl = null) {
     ? [
         { ...base, reply_markup: { inline_keyboard: [[{ text: "💳 Оплатить", url: payUrl }]] } },
         // Telegram придирчив к ссылкам в кнопках: не принял — уводим её в текст.
-        { ...base, text: `${text}\n\n<a href="${payUrl}">💳 Оплатить онлайн</a>` },
+        { ...base, text: `${text}\n\n<a href="${payUrl}">💳 Оплатить</a>` },
       ]
     : [base];
 
