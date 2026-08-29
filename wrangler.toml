@@ -2,9 +2,10 @@ name = "autofines-ge"
 main = "src/worker.js"
 compatibility_date = "2026-08-01"
 
-# 06:20 UTC ≈ 10:20 по Тбилиси. Cloudflare не отключает cron за неактивность.
+# 08:00 UTC = 12:00 по Тбилиси. Грузия сезон не переводит, так что круглый год.
+# Cloudflare, в отличие от GitHub Actions, не отключает cron за неактивность.
 [triggers]
-crons = ["20 6 * * *"]
+crons = ["0 8 * * *"]
 
 [[kv_namespaces]]
 binding = "STATE"
