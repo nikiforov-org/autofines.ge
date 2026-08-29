@@ -9,10 +9,6 @@ export const ARTICLES = {
   "125-1-0": "Превышение скорости на 15–30 км/ч",
 };
 
-// Сервис 1205 «Patrol Fine», режим «Payment with bill and vehicle state number»:
-// просит только номер квитанции и госномер, авторизация не нужна, комиссии нет.
-export const TBC_PAY_URL = "https://tbcpay.ge/en/services/jarimebi/patrulis-jarima";
-
 /**
  * Адрес в базе МВД выглядит как «ქ. <город> <улица> N<дом> (<тип камеры>) <номер>».
  * Геокодеры такую строку не берут: мешает префикс «ქ.», хвост с камерой и порядок,
@@ -123,8 +119,7 @@ export function renderEvent(event, plate, coords = null) {
     : "—";
 
   const lines = [
-    // Номер протокола и госномер — в <code>: в Telegram они копируются одним тапом,
-    // а форма TBC Pay просит ровно эти два поля.
+    // Номер протокола и госномер — в <code>: в Telegram копируются одним тапом.
     `<b>${TITLES[event.type]}</b> — <code>${escapeHtml(plate)}</code>`,
     "",
     `Протокол: <code>${escapeHtml(fine.protocolNo)}</code>`,
@@ -140,7 +135,6 @@ export function renderEvent(event, plate, coords = null) {
     lines.push(`Оплатить до: ${ruDate(fine.lastDate)}${tail}`);
   }
 
-  lines.push("", `<i>Не открылось — <a href="${TBC_PAY_URL}">TBC Pay</a>, режим «bill and vehicle state number».</i>`);
 
   return lines.join("\n");
 }
