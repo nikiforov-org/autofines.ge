@@ -29,8 +29,36 @@ repository activity has occurred in 60 days». Формально в докум�
 с полями `firstResult`, `protocolAuto` и `csrf_token` (токен берётся со страницы
 формы, cookie той же сессии обязательна). Worker повторяет ровно этот запрос.
 
-Ссылка на оплату собирается так же, как это делает сам сайт в функции `payment()`:
-платёжный шлюз `mpi.gc.ge` с `o.protocolId` и `o.vehicleNumber`.
+### Оплата
+
+Кнопка «Оплатить» ведёт на платёжную ссылку police.ge для конкретного протокола —
+шлюз `mpi.gc.ge` с `o.protocolId` и `o.vehicleNumber`, собранную ровно так же, как
+её строит функция `payment()` на самом сайте. Строкой ниже в сообщении лежит
+запасная ссылка на [TBC Pay → Patrol Fine](https://tbcpay.ge/en/services/jarimebi/patrulis-jarima)
+(сервис `1205`, режим «Payment with bill and vehicle state number»): там комиссии нет,
+но данные придётся вбить руками — поэтому номер протокола и госномер в сообщении
+обёрнуты в `<code>` и копируются одним тапом.
+
+Ссылки, которая открывала бы приложение банка с подставленной суммой, построить
+нельзя. Проверено по манифестам самих приложений: TBC ловит `tbconline://`, `tbcaf://`,
+`c2c://` и `api.tpay.ge/v1/Checkout/mobile/callback`, BOG — `bogapp://`, `bogmbank://`
+и `bogapp.pay.bog.ge`. Всё это ссылки на **заказ, заранее созданный мерчантом**:
+сумма лежит в заказе, а не в параметрах ссылки. Для штрафов такой заказ умеет
+создавать только protocols.ge (`POST /api/getPaymentURL`), а он требует `accessToken`
+из поиска, закрытого reCAPTCHA v3.
+
+### Адрес на карте
+
+База МВД пишет адрес как «ქ. <город> <улица> N<дом> (<тип камеры>) <номер камеры>».
+Текстовый поиск по такой строке не находит ничего — мешает хвост про камеру,
+префикс «ქ.» и порядок, где город идёт перед улицей.
+
+Поэтому `src/geocode.js` разбирает строку на город и улицу (номер дома переезжает
+вперёд, как ждёт Nominatim) и делает структурный запрос к OpenStreetMap; в ссылку
+уходят координаты, а не текст — тогда пин ставится точно. Результат кэшируется
+в KV под ключом `geo:<адрес>`, потому что адреса камер повторяются, а Nominatim
+просит не ходить чаще раза в секунду. Если геокодер промахнулся, остаётся
+текстовый поиск как запасной вариант.
 
 Отправленные протоколы запоминаются в Workers KV, поэтому одно и то же
 уведомление не приходит каждый день:
@@ -59,7 +87,7 @@ repository activity has occurred in 60 days». Формально в докум�
    npm install
    npx wrangler login
    npx wrangler kv namespace create STATE   # id из вывода → в wrangler.toml
-   npx wrangler secret put PLATES             # A354OC797, можно несколько через запятую
+   # госномера — не секрет, они лежат открыто: PLATES в [vars] wrangler.toml
    npx wrangler secret put TELEGRAM_BOT_TOKEN
    npx wrangler secret put TELEGRAM_CHAT_ID
    npx wrangler secret put TRIGGER_SECRET     # необязательно — пароль к ручному запуску
@@ -69,6 +97,9 @@ repository activity has occurred in 60 days». Формально в докум�
    ```sh
    curl "https://autofines-ge.<ваш-поддомен>.workers.dev/run?key=<TRIGGER_SECRET>"
    ```
+
+   Текущий развёрнутый экземпляр — `https://autofines-ge.e-408.workers.dev`, KV
+   `de55625657694e749900b528724c5001` (id уже прописан в `wrangler.toml`).
    Добавьте `&always=1`, чтобы прислало и уже известные штрафы.
 
 Если публичный URL не нужен вовсе, поставьте `workers_dev = false` в `wrangler.toml` —
@@ -76,12 +107,12 @@ cron продолжит работать, а ручка `/run` просто ис
 
 ## Настройки
 
-Секреты (`wrangler secret put`): `PLATES`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`,
-`TRIGGER_SECRET`. Остальное — блок `[vars]` в `wrangler.toml`:
+Секреты (`wrangler secret put`): `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`,
+`TRIGGER_SECRET`. Остальное — открытый блок `[vars]` в `wrangler.toml`:
 
 | Переменная | По умолчанию | Смысл |
 |---|---|---|
-| `PLATES` | — | Госномера через запятую. Латиница слитно, без пробелов и кода страны |
+| `PLATES` | `["A354OC797"]` | Массив госномеров. Латиница слитно, без пробелов и кода страны |
 | `REMIND_DAYS` | `7` | Напоминать за столько дней до конца срока оплаты; `0` — не напоминать |
 | `NOTIFY_ALWAYS` | `0` | Слать все текущие штрафы каждый запуск, а не только новые |
 | `NOTIFY_EMPTY` | `0` | Присылать «штрафов нет» — пульс, что проверка живая |
@@ -98,7 +129,8 @@ npm run dev                    # Worker в локальном workerd; пере�
 ```
 
 Для `npm run dev` скопируйте `.dev.vars.example` в `.dev.vars` и подставьте свои
-значения; файл в `.gitignore`.
+значения; файл в `.gitignore`. Массивов dotenv не умеет, поэтому локально `PLATES`
+задаётся строкой через запятую — воркер принимает оба вида.
 
 ## Что стоит иметь в виду
 

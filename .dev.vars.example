@@ -1,3 +1,4 @@
+# локально — строка через запятую; в wrangler.toml это массив
 PLATES=A354OC797
 TELEGRAM_BOT_TOKEN=0000:локальная-заглушка
 TELEGRAM_CHAT_ID=0

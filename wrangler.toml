@@ -6,13 +6,13 @@ compatibility_date = "2026-08-01"
 [triggers]
 crons = ["20 6 * * *"]
 
-# id подставится после `npx wrangler kv namespace create STATE`
 [[kv_namespaces]]
 binding = "STATE"
-id = "ЗАПОЛНИТЬ"
+id = "de55625657694e749900b528724c5001"
 
-# Секреты (PLATES, TELEGRAM_*, TRIGGER_SECRET) кладутся через `wrangler secret put`.
+# Секреты (TELEGRAM_*, TRIGGER_SECRET) кладутся через `wrangler secret put`.
 [vars]
+PLATES = ["A354OC797"]  # госномера: латиница слитно, без пробелов и кода страны
 REMIND_DAYS = "7"   # напоминать, когда до конца срока оплаты осталось столько дней; "0" — не напоминать
 NOTIFY_EMPTY = "0"  # "1" — присылать «штрафов нет» как пульс живости
 NOTIFY_ALWAYS = "0" # "1" — слать все текущие штрафы каждый запуск, а не только новые

@@ -7,18 +7,20 @@
  */
 
 import { fetchPlate, paymentUrl } from "./police.js";
-import { diffFines, renderEvent } from "./notify.js";
+import { diffFines, renderEvent, TBC_PAY_URL } from "./notify.js";
+import { geocodeCached } from "./geocode.js";
 import { sendMessage } from "./telegram.js";
 
 const STATE_KEY = "state";
 
 const flag = (value) => ["1", "true", "yes", "on"].includes(String(value ?? "").trim().toLowerCase());
 
+// В wrangler.toml PLATES — массив, но в .dev.vars и в секретах бывает только
+// строка, поэтому принимаем оба вида.
 const parsePlates = (raw) =>
-  String(raw ?? "")
-    .split(/[,\s]+/)
-    .filter(Boolean)
-    .map((plate) => plate.toUpperCase());
+  (Array.isArray(raw) ? raw : String(raw ?? "").split(/[,\s]+/))
+    .map((plate) => String(plate).trim().toUpperCase())
+    .filter(Boolean);
 
 /** Один проход проверки. Возвращает короткий отчёт для логов и ручного запуска. */
 export async function runCheck(env, overrides = {}) {
@@ -50,7 +52,10 @@ export async function runCheck(env, overrides = {}) {
 
     for (const event of events) {
       const payUrl = event.type === "gone" ? null : paymentUrl(event.protocolNo, plate);
-      await sendMessage(env, renderEvent(event, plate), payUrl);
+      const coords = event.fine?.protocolPlace
+        ? await geocodeCached(env.STATE, event.fine.protocolPlace)
+        : null;
+      await sendMessage(env, renderEvent(event, plate, coords), payUrl);
       report.sent++;
     }
 

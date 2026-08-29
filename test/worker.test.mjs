@@ -53,6 +53,18 @@ function stubFetch({ fines = [FINE], telegramStatus = 200 } = {}) {
       });
     }
 
+    if (target.includes("nominatim.openstreetmap.org")) {
+      // Nominatim отдаёт улицу кусками — воркер должен усреднить их в одну точку.
+      return new Response(JSON.stringify([
+        { lat: "41.6100000", lon: "41.6000000", display_name: "გიორგი ანწუხელიძის ქუჩა, ბათუმი",
+          address: { road: "გიორგი ანწუხელიძის ქუჩა" } },
+        { lat: "41.6200000", lon: "41.6100000", display_name: "გიორგი ანწუხელიძის ქუჩა, ბათუმი",
+          address: { road: "გიორგი ანწუხელიძის ქუჩა" } },
+        { lat: "41.9999999", lon: "41.9999999", display_name: "სხვა ქუჩა",
+          address: { road: "სხვა ქუჩა" } },
+      ]));
+    }
+
     if (target.includes("api.telegram.org")) {
       sent.push(JSON.parse(init.body));
       return new Response(JSON.stringify({ ok: telegramStatus === 200 }), { status: telegramStatus });
@@ -82,15 +94,25 @@ test("полный проход: находит штраф, шлёт карто�
     assert.deepEqual(report.plates.A354OC797, { found: 1, events: ["new"] });
 
     assert.equal(sent.length, 1);
-    assert.match(sent[0].text, /🚨 Новый штраф — A354OC797/);
+    assert.match(sent[0].text, /<b>🚨 Новый штраф<\/b> — <code>A354OC797<\/code>/);
     assert.equal(sent[0].parse_mode, "HTML");
     assert.equal(
       sent[0].reply_markup.inline_keyboard[0][0].url,
       paymentUrl("კვ000474970", "A354OC797"),
     );
 
+    assert.match(
+      sent[0].text,
+      /href="https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=41\.615%2C41\.605"/,
+      "в ссылку уходит центр сегментов нужной улицы, чужая улица отброшена",
+    );
+
     const state = JSON.parse(kv.dump().state);
     assert.ok(state.A354OC797["კვ000474970"], "протокол должен запомниться");
+    assert.ok(
+      kv.dump()["geo:ქ. ბათუმი ანწუხელიძის ქუჩა N83"],
+      "координаты кэшируются, чтобы не ходить в Nominatim каждый раз",
+    );
   } finally {
     restore();
   }
@@ -126,6 +148,24 @@ test("госномер нормализуется в верхний регист
   }
 });
 
+test("PLATES принимается массивом — так он лежит в wrangler.toml", async () => {
+  const kv = memoryKv();
+  const { restore } = stubFetch();
+  try {
+    const report = await runCheck(env(kv, { PLATES: ["a354oc797", " B123CD456 "] }));
+    assert.deepEqual(Object.keys(report.plates), ["A354OC797", "B123CD456"]);
+    assert.equal(report.sent, 2, "по одному уведомлению на номер");
+  } finally {
+    restore();
+  }
+});
+
+test("пустой PLATES — внятная ошибка, а не тихий простой", async () => {
+  const kv = memoryKv();
+  await assert.rejects(runCheck(env(kv, { PLATES: [] })), /не задан PLATES/);
+  await assert.rejects(runCheck(env(kv, { PLATES: "  " })), /не задан PLATES/);
+});
+
 test("NOTIFY_EMPTY даёт пульс, когда штрафов нет", async () => {
   const kv = memoryKv();
   const { sent, restore } = stubFetch({ fines: [] });
@@ -146,7 +186,7 @@ test("Telegram с кнопкой не принял — уходит второй
     assert.equal(sent.length, 2, "две попытки по одному штрафу");
     assert.ok(sent[0].reply_markup, "первая — с кнопкой");
     assert.equal(sent[1].reply_markup, undefined, "вторая — без кнопки, ссылка в тексте");
-    assert.match(sent[1].text, /💳 Оплатить онлайн/);
+    assert.match(sent[1].text, /💳 Оплатить</);
   } finally {
     restore();
   }
