@@ -1,0 +1,21 @@
+name = "autofines-ge"
+main = "src/worker.js"
+compatibility_date = "2026-08-01"
+
+# 06:20 UTC ≈ 10:20 по Тбилиси. Cloudflare не отключает cron за неактивность.
+[triggers]
+crons = ["20 6 * * *"]
+
+# id подставится после `npx wrangler kv namespace create STATE`
+[[kv_namespaces]]
+binding = "STATE"
+id = "ЗАПОЛНИТЬ"
+
+# Секреты (PLATES, TELEGRAM_*, TRIGGER_SECRET) кладутся через `wrangler secret put`.
+[vars]
+REMIND_DAYS = "7"   # напоминать, когда до конца срока оплаты осталось столько дней; "0" — не напоминать
+NOTIFY_EMPTY = "0"  # "1" — присылать «штрафов нет» как пульс живости
+NOTIFY_ALWAYS = "0" # "1" — слать все текущие штрафы каждый запуск, а не только новые
+
+[observability]
+enabled = true
