@@ -225,3 +225,85 @@ test("ручка /run закрыта без правильного секрет�
   // Без TRIGGER_SECRET ручка выключена совсем, даже с пустым key.
   assert.equal((await worker.fetch(new Request("https://x/run?key="), env(kv))).status, 404);
 });
+
+/** ctx воркера: waitUntil должен быть дождан, иначе фоновая проверка не успеет. */
+function testCtx() {
+  const jobs = [];
+  return { ctx: { waitUntil: (p) => jobs.push(p) }, done: () => Promise.all(jobs) };
+}
+
+test("кнопка в Telegram запускает проверку", async () => {
+  const { default: worker } = await import("../src/worker.js");
+  const kv = memoryKv();
+  const { sent, restore } = stubFetch();
+  const { ctx, done } = testCtx();
+  try {
+    const request = new Request("https://x/telegram", {
+      method: "POST",
+      headers: { "X-Telegram-Bot-Api-Secret-Token": "s3cret" },
+      body: JSON.stringify({ message: { chat: { id: "chat" }, text: "🔄 Проверить штрафы" } }),
+    });
+    const response = await worker.fetch(request, env(kv, { TRIGGER_SECRET: "s3cret" }), ctx);
+    assert.equal(response.status, 200);
+    await done();
+    assert.equal(sent.length, 1);
+    assert.match(sent[0].text, /Новый штраф/);
+  } finally {
+    restore();
+  }
+});
+
+test("команда /check работает так же, как кнопка", async () => {
+  const { default: worker } = await import("../src/worker.js");
+  const kv = memoryKv();
+  const { sent, restore } = stubFetch({ fines: [] });
+  const { ctx, done } = testCtx();
+  try {
+    const request = new Request("https://x/telegram", {
+      method: "POST",
+      headers: { "X-Telegram-Bot-Api-Secret-Token": "s3cret" },
+      body: JSON.stringify({ message: { chat: { id: "chat" }, text: "/check" } }),
+    });
+    await worker.fetch(request, env(kv, { TRIGGER_SECRET: "s3cret" }), ctx);
+    await done();
+    assert.equal(sent.length, 1, "пустая проверка тоже должна ответить");
+    assert.match(sent[0].text, /неоплаченных штрафов нет/);
+  } finally {
+    restore();
+  }
+});
+
+test("вебхук игнорирует чужой чат и запрос без секретного заголовка", async () => {
+  const { default: worker } = await import("../src/worker.js");
+  const kv = memoryKv();
+  const { sent, restore } = stubFetch();
+  const { ctx, done } = testCtx();
+  const e = env(kv, { TRIGGER_SECRET: "s3cret" });
+  try {
+    const noHeader = new Request("https://x/telegram", {
+      method: "POST",
+      body: JSON.stringify({ message: { chat: { id: "chat" }, text: "/check" } }),
+    });
+    assert.equal((await worker.fetch(noHeader, e, ctx)).status, 404);
+
+    const alienChat = new Request("https://x/telegram", {
+      method: "POST",
+      headers: { "X-Telegram-Bot-Api-Secret-Token": "s3cret" },
+      body: JSON.stringify({ message: { chat: { id: "999" }, text: "/check" } }),
+    });
+    assert.equal((await worker.fetch(alienChat, e, ctx)).status, 200);
+
+    await done();
+    assert.deepEqual(sent, [], "ни один чужой запрос не должен запускать проверку");
+  } finally {
+    restore();
+  }
+});
+
+test("/setup закрыт без секрета", async () => {
+  const { default: worker } = await import("../src/worker.js");
+  const kv = memoryKv();
+  const e = env(kv, { TRIGGER_SECRET: "s3cret" });
+  assert.equal((await worker.fetch(new Request("https://x/setup"), e, testCtx().ctx)).status, 404);
+  assert.equal((await worker.fetch(new Request("https://x/setup?key=nope"), e, testCtx().ctx)).status, 404);
+});

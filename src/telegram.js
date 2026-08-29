@@ -2,6 +2,20 @@
 
 const API = (token, method) => `https://api.telegram.org/bot${token}/${method}`;
 
+/** Любой метод Bot API. Бросает при ошибке, чтобы падение не осталось незамеченным. */
+export async function callTelegram(env, method, payload = {}) {
+  const response = await fetch(API(env.TELEGRAM_BOT_TOKEN, method), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || data.ok === false) {
+    throw new Error(`Telegram ${method}: ${response.status} ${JSON.stringify(data).slice(0, 200)}`);
+  }
+  return data.result;
+}
+
 export async function sendMessage(env, text, payUrl = null) {
   const base = {
     chat_id: env.TELEGRAM_CHAT_ID,
