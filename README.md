@@ -67,6 +67,7 @@ repository activity has occurred in 60 days». Формально в докум�
 | Протокол пропал из базы | ✅ Скорее всего, оплачен |
 | Штрафов нет | молчит (либо ✅, если `NOTIFY_EMPTY`) |
 | Проверка упала | ⚠️ Текст ошибки |
+| Нажата кнопка 🔄 в Telegram | То же, что по cron, плюс ответ «новых нет», если тихо |
 
 Последняя строка важна: у Cloudflare нет писем о падении cron, поэтому Worker
 сообщает о своих ошибках сам, в тот же чат.
@@ -89,7 +90,18 @@ repository activity has occurred in 60 days». Формально в докум�
    npx wrangler secret put TRIGGER_SECRET     # необязательно — пароль к ручному запуску
    npx wrangler deploy
    ```
-4. Проверить, что сообщение доходит:
+4. Включить кнопку проверки в Telegram (вешает вебхук, команду `/check`
+   и постоянную клавиатуру):
+   ```sh
+   curl "https://autofines-ge.<ваш-поддомен>.workers.dev/setup?key=<TRIGGER_SECRET>"
+   ```
+   После этого в чате с ботом появляется кнопка **🔄 Проверить штрафы** — она
+   запускает ту же проверку, что и cron, и всегда отвечает: либо карточками
+   штрафов, либо строкой «новых нет». Подлинность запросов Telegram проверяется
+   по заголовку `X-Telegram-Bot-Api-Secret-Token`, а сама проверка запускается
+   только для своего `TELEGRAM_CHAT_ID`.
+
+5. Проверить, что сообщение доходит:
    ```sh
    curl "https://autofines-ge.<ваш-поддомен>.workers.dev/run?key=<TRIGGER_SECRET>"
    ```
@@ -97,6 +109,8 @@ repository activity has occurred in 60 days». Формально в докум�
    Текущий развёрнутый экземпляр — `https://autofines-ge.e-408.workers.dev`, KV
    `de55625657694e749900b528724c5001` (id уже прописан в `wrangler.toml`).
    Добавьте `&always=1`, чтобы прислало и уже известные штрафы.
+
+   Текущий развёрнутый экземпляр — `https://autofines-ge.e-408.workers.dev`.
 
 Если публичный URL не нужен вовсе, поставьте `workers_dev = false` в `wrangler.toml` —
 cron продолжит работать, а ручка `/run` просто исчезнет.

@@ -9,9 +9,12 @@
 import { fetchPlate, paymentUrl } from "./police.js";
 import { diffFines, renderEvent } from "./notify.js";
 import { geocodeCached } from "./geocode.js";
-import { sendMessage } from "./telegram.js";
+import { callTelegram, sendMessage } from "./telegram.js";
 
 const STATE_KEY = "state";
+
+/** Подпись кнопки на постоянной клавиатуре бота. */
+const CHECK_BUTTON = "🔄 Проверить штрафы";
 
 const flag = (value) => ["1", "true", "yes", "on"].includes(String(value ?? "").trim().toLowerCase());
 
@@ -74,6 +77,23 @@ export async function runCheck(env, overrides = {}) {
   return report;
 }
 
+/** Короткий итог ручной проверки — чтобы нажатие кнопки не оставалось без ответа. */
+async function reportManualRun(env) {
+  try {
+    const report = await runCheck(env);
+    const found = Object.values(report.plates).reduce((sum, p) => sum + p.found, 0);
+    if (report.sent === 0) {
+      const text = found === 0
+        ? "✅ Проверил: неоплаченных штрафов нет."
+        : `✅ Проверил: штрафов ${found}, новых нет.`;
+      await sendMessage(env, text);
+    }
+  } catch (error) {
+    await sendMessage(env, `⚠️ Проверка упала:\n<code>${String(error.message).slice(0, 500)}</code>`)
+      .catch(() => {});
+  }
+}
+
 /**
  * У Cloudflare нет писем о падении cron, поэтому об ошибке сообщаем сами.
  * Если не удалось даже это — пусть падает, останется в логах Worker'а.
@@ -93,11 +113,62 @@ export default {
     ctx.waitUntil(runAndReport(env));
   },
 
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (url.pathname === "/") {
       return new Response("autofines.ge — проверка штрафов МВД Грузии. Работает по cron.\n");
+    }
+
+    // Разовая настройка: вешает вебхук, команду /check и постоянную клавиатуру.
+    if (url.pathname === "/setup") {
+      if (!env.TRIGGER_SECRET || url.searchParams.get("key") !== env.TRIGGER_SECRET) {
+        return new Response("not found\n", { status: 404 });
+      }
+      try {
+        await callTelegram(env, "setWebhook", {
+          url: `${url.origin}/telegram`,
+          secret_token: env.TRIGGER_SECRET,
+          allowed_updates: ["message"],
+        });
+        await callTelegram(env, "setMyCommands", {
+          commands: [{ command: "check", description: "Проверить штрафы сейчас" }],
+        });
+        await callTelegram(env, "sendMessage", {
+          chat_id: env.TELEGRAM_CHAT_ID,
+          text: "Кнопка проверки готова.",
+          reply_markup: {
+            keyboard: [[{ text: CHECK_BUTTON }]],
+            resize_keyboard: true,
+            is_persistent: true,
+          },
+        });
+        return Response.json({ ok: true, webhook: `${url.origin}/telegram`, button: CHECK_BUTTON });
+      } catch (error) {
+        return Response.json({ error: String(error.message) }, { status: 500 });
+      }
+    }
+
+    // Вебхук Telegram. Подлинность — по секретному заголовку, который задаёт сам Telegram.
+    if (url.pathname === "/telegram" && request.method === "POST") {
+      if (
+        !env.TRIGGER_SECRET ||
+        request.headers.get("X-Telegram-Bot-Api-Secret-Token") !== env.TRIGGER_SECRET
+      ) {
+        return new Response("not found\n", { status: 404 });
+      }
+
+      const update = await request.json().catch(() => ({}));
+      const message = update.message ?? {};
+      const text = (message.text ?? "").trim();
+      // Отвечаем только своему чату: вебхук открыт наружу.
+      const own = String(message.chat?.id ?? "") === String(env.TELEGRAM_CHAT_ID);
+
+      if (own && (text === CHECK_BUTTON || text === "/check" || text.startsWith("/check@"))) {
+        // Telegram ждёт быстрый 200, поэтому проверка уходит в фон.
+        ctx.waitUntil(reportManualRun(env));
+      }
+      return new Response("ok\n");
     }
 
     if (url.pathname === "/run") {
