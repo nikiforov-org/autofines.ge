@@ -91,17 +91,90 @@ export async function fetchPlate(plate, { pageCap = 20 } = {}) {
   return found;
 }
 
+// Реквизиты платёжной страницы — ровно те, что подставляет police.ge в payment().
+const PAY_PAGE = "https://mpi.gc.ge/page1/";
+const PAGE_ID = "0B849B8B559D32AE7E2F136C180F5983";
+const MERCHANT_ID = "5ACF0AC08EA8263A576BDC08B6E25DED";
+const BACK_OK = "https://police.ge/protocol/success.php";
+const BACK_FAIL = "https://police.ge/protocol/fail.php?id=";
+
 /** Платёжная ссылка на протокол — ровно та, что собирает police.ge в функции payment(). */
 export function paymentUrl(protocolNo, plate) {
   const protocol = encodeURIComponent(protocolNo);
   return (
-    "https://mpi.gc.ge/page1/?lang_code=ka" +
-    "&page_id=0B849B8B559D32AE7E2F136C180F5983" +
-    "&merch_id=5ACF0AC08EA8263A576BDC08B6E25DED" +
-    "&back_url_s=https://police.ge/protocol/success.php" +
-    `&back_url_f=https://police.ge/protocol/fail.php?id=${protocol}` +
+    `${PAY_PAGE}?lang_code=ka` +
+    `&page_id=${PAGE_ID}` +
+    `&merch_id=${MERCHANT_ID}` +
+    `&back_url_s=${BACK_OK}` +
+    `&back_url_f=${BACK_FAIL}${protocol}` +
     `&o.protocolId=${protocol}` +
     `&o.vehicleNumber=${encodeURIComponent(plate)}` +
     "&o.resourceAlias=1"
   );
+}
+
+// Открытая часть API платёжного шлюза Банка Грузии. Версия и portal-идентификатор
+// взяты из mpi.gc.ge/page1/settings.js — оттуда же их берёт сама страница оплаты.
+const PAY_API = "https://mpi.gc.ge/open/api/v4/66EF9A2E6D429D8F0C767574F9353E8B";
+
+/** POST к шлюзу. Возвращает разобранный JSON или null: по мусору судить нельзя. */
+async function payApi(path, body) {
+  const response = await fetch(`${PAY_API}${path}`, {
+    method: "POST",
+    headers: {
+      "User-Agent": USER_AGENT,
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      "X-Requested-With": "XMLHttpRequest",
+      Referer: PAY_PAGE,
+      Origin: "https://mpi.gc.ge",
+    },
+    body,
+  });
+  return response.json().catch(() => null);
+}
+
+/**
+ * Оплачен ли протокол на самом деле.
+ *
+ * МВД проводит оплату с задержкой: оплаченный штраф ещё несколько дней висит в
+ * выдаче searchByAuto, и по ней оплату не отличить. Отличает платёжный шлюз —
+ * на оплаченный протокол он не открывает форму карты, а сразу отдаёт готовый
+ * результат со статусом FAILED. Страница оплаты в этом случае молча уходит на
+ * back_url_f, то есть на police.ge/protocol/index.php: это и видно в браузере.
+ * Повторяем ровно те два запроса, которые страница делает при загрузке.
+ *
+ * @returns {Promise<boolean|null>} null — шлюз ответил непонятно, судить нельзя
+ */
+export async function isPaid(protocolNo, plate) {
+  try {
+    const { token } = (await payApi("/token")) ?? {};
+    if (!token) return null;
+
+    const start = await payApi(
+      `/payment/${encodeURIComponent(token)}/start`,
+      new URLSearchParams({
+        merchantId: MERCHANT_ID,
+        "state.redirect": "post_params",
+        "state.in_progress": "no",
+        back_url_s: BACK_OK,
+        back_url_f: `${BACK_FAIL}${protocolNo}`,
+        returnUrl: PAY_PAGE,
+        lang: "ka",
+        "3ds2.supported": "true",
+        "params.protocolId": protocolNo,
+        "params.vehicleNumber": plate,
+        "params.resourceAlias": "1",
+      }),
+    );
+
+    // Готовый результат на старте, до всякой карты, — заказ отклонили не глядя.
+    // CPA_REJECTED ставит биллинг полиции: он и есть тот, кто знает про долг,
+    // поэтому его отказ читаем как «платить нечего». Отказ с другим кодом мог
+    // прийти по своей причине — оплаченным штраф по нему не считаем.
+    if (start?.result?.extendedCode === "CPA_REJECTED") return true;
+    // «input» — шлюз просит карту, значит платить есть за что.
+    return start?.state ? false : null;
+  } catch {
+    return null;
+  }
 }
