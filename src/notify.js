@@ -38,13 +38,23 @@ const TITLES = {
   new: "🚨 Новый штраф",
   repeat: "🔁 Штраф не оплачен",
   remind: "⏰ Скоро истекает срок оплаты",
+  paid: "✅ Штраф оплачен",
 };
 
 /**
  * Сравнивает свежую выдачу с запомненным состоянием.
+ * @param {Set<string>} paid протоколы, которые на самом деле уже оплачены, —
+ *   МВД держит их в базе ещё несколько дней после оплаты
  * @returns {{events: Array, known: object}} known — уже обновлённое состояние
  */
-export function diffFines({ fines, known = {}, today, remindDays = 0, notifyAlways = false }) {
+export function diffFines({
+  fines,
+  known = {},
+  today,
+  remindDays = 0,
+  notifyAlways = false,
+  paid = new Set(),
+}) {
   const current = new Map(fines.filter((f) => f.protocolNo).map((f) => [f.protocolNo, f]));
   const next = { ...known };
   const events = [];
@@ -53,7 +63,12 @@ export function diffFines({ fines, known = {}, today, remindDays = 0, notifyAlwa
     const record = next[protocolNo];
     const left = fine.remainingDays;
 
-    if (!record) {
+    if (paid.has(protocolNo)) {
+      // Оплаченный штраф тревоги не стоит: говорим о нём один раз и замолкаем.
+      // Обратно в неоплаченные он не вернётся, поэтому отметка в состоянии вечная.
+      if (!record?.paid || notifyAlways) events.push({ type: "paid", protocolNo, fine });
+      next[protocolNo] = { ...(record ?? { firstSeen: today }), paid: today };
+    } else if (!record) {
       events.push({ type: "new", protocolNo, fine });
       next[protocolNo] = { firstSeen: today, remindedAt: null };
     } else if (notifyAlways) {
@@ -78,7 +93,8 @@ export function diffFines({ fines, known = {}, today, remindDays = 0, notifyAlwa
 
   for (const protocolNo of Object.keys(next)) {
     if (!current.has(protocolNo)) {
-      events.push({ type: "gone", protocolNo });
+      // Про оплаченный уже сказали — то, что он ушёл из базы, ничего не добавляет.
+      if (!next[protocolNo].paid) events.push({ type: "gone", protocolNo });
       delete next[protocolNo];
     }
   }
@@ -126,15 +142,18 @@ export function renderEvent(event, plate, coords = null) {
     `Дата: ${ruDate(fine.violationDate || fine.protocolDate)}`,
     `Место: ${place}`,
     `Статья: ${law}`,
-    `Сумма: <b>${escapeHtml(fine.protocolAmount ?? "—")} ₾</b>`,
+    // Камерные штрафы дешевеют на 20%, если заплатить за 10 дней, но police.ge
+    // всё это время показывает полную сумму: скидку знает только платёжный шлюз,
+    // и на его странице она уже подставлена. Поэтому подписываем цифру честно.
+    `Сумма без скидки: <b>${escapeHtml(fine.protocolAmount ?? "—")} ₾</b>`,
   ];
 
-  if (fine.lastDate) {
+  // Срок оплаты у оплаченного штрафа только сбивал бы с толку.
+  if (event.type !== "paid" && fine.lastDate) {
     const left = fine.remainingDays;
     const tail = Number.isInteger(left) ? ` (осталось ${left} ${pluralDays(left)})` : "";
     lines.push(`Оплатить до: ${ruDate(fine.lastDate)}${tail}`);
   }
-
 
   return lines.join("\n");
 }

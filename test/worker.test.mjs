@@ -31,7 +31,7 @@ function memoryKv(initial = {}) {
 }
 
 /** Подменяет глобальный fetch: police.ge отвечает заготовкой, Telegram — копится. */
-function stubFetch({ fines = [FINE], telegramStatus = 200 } = {}) {
+function stubFetch({ fines = [FINE], telegramStatus = 200, paid = [], gateway = null } = {}) {
   const sent = [];
   const original = globalThis.fetch;
 
@@ -51,6 +51,19 @@ function stubFetch({ fines = [FINE], telegramStatus = 200 } = {}) {
       return new Response(`<input type="hidden" name="csrf_token" value="${"a".repeat(32)}">`, {
         headers: { "set-cookie": "PHPSESSID=zzz; path=/; HttpOnly" },
       });
+    }
+
+    // Платёжный шлюз: на оплаченный протокол он отдаёт готовый результат вместо
+    // формы карты — по этому и отличаем оплату, которую МВД ещё не провело.
+    if (target.includes("mpi.gc.ge/open/api")) {
+      if (gateway) return gateway(target, init);
+      if (target.endsWith("/token")) return new Response(JSON.stringify({ token: "TKN" }));
+      const protocolNo = new URLSearchParams(init.body).get("params.protocolId");
+      return new Response(JSON.stringify(
+        paid.includes(protocolNo)
+          ? { state: "result", result: { status: "FAILED", extendedCode: "CPA_REJECTED" } }
+          : { state: "input" },
+      ));
     }
 
     if (target.includes("nominatim.openstreetmap.org")) {
@@ -94,7 +107,7 @@ test("полный проход: находит штраф, шлёт карто�
   try {
     const report = await runCheck(env(kv));
     assert.equal(report.sent, 1);
-    assert.deepEqual(report.plates.A354OC797, { found: 1, events: ["new"] });
+    assert.deepEqual(report.plates.A354OC797, { found: 1, unpaid: 1, events: ["new"] });
 
     assert.equal(sent.length, 1);
     assert.match(sent[0].text, /<b>🚨 Новый штраф<\/b> — <code>A354OC797<\/code>/);
@@ -137,6 +150,129 @@ test("второй запуск по тем же данным молчит", asy
     assert.equal(stub.sent.length, 0);
   } finally {
     stub.restore();
+  }
+});
+
+test("оплаченный штраф не поднимает тревогу, а приходит отметкой об оплате", async () => {
+  const kv = memoryKv();
+  const { sent, restore } = stubFetch({ paid: ["კვ000474970"] });
+  try {
+    const report = await runCheck(env(kv));
+    assert.deepEqual(report.plates.A354OC797, { found: 1, unpaid: 0, events: ["paid"] });
+    assert.equal(sent.length, 1);
+    assert.match(sent[0].text, /<b>✅ Штраф оплачен<\/b>/);
+    assert.equal(sent[0].reply_markup, undefined, "платить нечего — кнопки оплаты нет");
+    assert.doesNotMatch(sent[0].text, /Оплатить до/);
+  } finally {
+    restore();
+  }
+});
+
+test("про оплату говорим один раз, дальше молчим", async () => {
+  const kv = memoryKv();
+  let stub = stubFetch({ paid: ["კვ000474970"] });
+  try { await runCheck(env(kv)); } finally { stub.restore(); }
+
+  stub = stubFetch({ paid: ["კვ000474970"] });
+  try {
+    const report = await runCheck(env(kv));
+    assert.equal(report.sent, 0);
+    assert.deepEqual(report.plates.A354OC797.events, []);
+  } finally {
+    stub.restore();
+  }
+});
+
+test("оплата запомнена — шлюз больше не спрашиваем", async () => {
+  const kv = memoryKv();
+  let stub = stubFetch({ paid: ["კვ000474970"] });
+  try { await runCheck(env(kv)); } finally { stub.restore(); }
+
+  // Шлюз, который развалил бы проверку, если бы к нему пошли.
+  const asked = [];
+  stub = stubFetch({
+    gateway: (target) => {
+      asked.push(target);
+      return new Response("bad gateway", { status: 502 });
+    },
+  });
+  try {
+    const report = await runCheck(env(kv));
+    assert.deepEqual(asked, [], "оплаченный штраф обратно в неоплаченные не выходит");
+    assert.equal(report.plates.A354OC797.unpaid, 0);
+  } finally {
+    stub.restore();
+  }
+});
+
+test("оплаченный штраф исчез из базы — второй раз об этом не пишем", async () => {
+  const kv = memoryKv();
+  let stub = stubFetch({ paid: ["კვ000474970"] });
+  try { await runCheck(env(kv)); } finally { stub.restore(); }
+
+  stub = stubFetch({ fines: [] });
+  try {
+    const report = await runCheck(env(kv));
+    assert.equal(report.sent, 0, "про «пропал из базы» уже сказано словом «оплачен»");
+    assert.deepEqual(JSON.parse(kv.dump().state), {}, "и из состояния он убран");
+  } finally {
+    stub.restore();
+  }
+});
+
+test("отказ шлюза с чужим кодом — не повод считать штраф оплаченным", async () => {
+  const kv = memoryKv();
+  const { sent, restore } = stubFetch({
+    gateway: (target) =>
+      new Response(JSON.stringify(
+        target.endsWith("/token")
+          ? { token: "TKN" }
+          // Не биллинг полиции, а сбой на стороне шлюза: про долг это ничего не говорит.
+          : { state: "result", result: { status: "FAILED", extendedCode: "MERCHANT_DISABLED" } },
+      )),
+  });
+  try {
+    const report = await runCheck(env(kv));
+    assert.deepEqual(report.plates.A354OC797, { found: 1, unpaid: 1, events: ["new"] });
+    assert.match(sent[0].text, /🚨 Новый штраф/);
+  } finally {
+    restore();
+  }
+});
+
+test("шлюз ответил непонятно — штраф остаётся неоплаченным", async () => {
+  const kv = memoryKv();
+  const { sent, restore } = stubFetch({
+    // Cloudflare-заглушка вместо JSON: по такому судить об оплате нельзя.
+    gateway: () => new Response("<html>are you a robot?</html>", { status: 403 }),
+  });
+  try {
+    const report = await runCheck(env(kv));
+    assert.deepEqual(report.plates.A354OC797, { found: 1, unpaid: 1, events: ["new"] });
+    assert.match(sent[0].text, /🚨 Новый штраф/, "лучше лишняя тревога, чем пропущенный штраф");
+    assert.ok(sent[0].reply_markup?.inline_keyboard, "с кнопкой оплаты");
+  } finally {
+    restore();
+  }
+});
+
+test("ручная проверка показывает оплаченный штраф и больше ничего не добавляет", async () => {
+  const { default: worker } = await import("../src/worker.js");
+  const kv = memoryKv();
+  const { sent, restore } = stubFetch({ paid: ["კვ000474970"] });
+  const { ctx, done } = testCtx();
+  try {
+    const request = new Request("https://x/telegram", {
+      method: "POST",
+      headers: { "X-Telegram-Bot-Api-Secret-Token": "s3cret" },
+      body: JSON.stringify({ message: { chat: { id: "chat" }, text: "/check" } }),
+    });
+    await worker.fetch(request, env(kv, { TRIGGER_SECRET: "s3cret" }), ctx);
+    await done();
+    assert.equal(sent.length, 1, "«неоплаченных нет» после карточки — лишняя строка");
+    assert.match(sent[0].text, /✅ Штраф оплачен/);
+  } finally {
+    restore();
   }
 });
 

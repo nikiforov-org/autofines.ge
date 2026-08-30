@@ -59,6 +59,48 @@ test("notifyAlways повторяет известный штраф", () => {
   assert.deepEqual(events.map((e) => e.type), ["repeat"]);
 });
 
+test("оплаченный протокол даёт paid вместо new и не тревожит повторно", () => {
+  const paid = new Set([FINE.protocolNo]);
+  const first = diffFines({ ...base, fines: [FINE], known: {}, paid });
+  assert.deepEqual(first.events.map((e) => e.type), ["paid"]);
+  assert.equal(first.known[FINE.protocolNo].paid, TODAY);
+
+  const second = diffFines({ ...base, fines: [FINE], known: first.known, paid });
+  assert.deepEqual(second.events, []);
+});
+
+test("оплата известного штрафа отменяет напоминание о сроке", () => {
+  const first = diffFines({ ...base, fines: [FINE], known: {} });
+  const soon = { ...FINE, remainingDays: 1 };
+  const { events } = diffFines({
+    ...base,
+    fines: [soon],
+    known: first.known,
+    paid: new Set([FINE.protocolNo]),
+  });
+  assert.deepEqual(events.map((e) => e.type), ["paid"]);
+});
+
+test("ручная проверка повторяет и оплаченный штраф", () => {
+  const paid = new Set([FINE.protocolNo]);
+  const first = diffFines({ ...base, fines: [FINE], known: {}, paid });
+  const { events } = diffFines({
+    ...base,
+    fines: [FINE],
+    known: first.known,
+    paid,
+    notifyAlways: true,
+  });
+  assert.deepEqual(events.map((e) => e.type), ["paid"]);
+});
+
+test("оплаченный штраф ушёл из базы — про это уже сказано, gone не дублируем", () => {
+  const first = diffFines({ ...base, fines: [FINE], known: {}, paid: new Set([FINE.protocolNo]) });
+  const { events, known } = diffFines({ ...base, fines: [], known: first.known });
+  assert.deepEqual(events, []);
+  assert.deepEqual(known, {});
+});
+
 test("исчезнувший протокол даёт gone и убирается из состояния", () => {
   const first = diffFines({ ...base, fines: [FINE], known: {} });
   const { events, known } = diffFines({ ...base, fines: [], known: first.known });
@@ -80,7 +122,7 @@ test("карточка штрафа собирается с русской ст�
   assert.match(text, /<b>🚨 Новый штраф<\/b> — <code>A354OC797<\/code>/);
   assert.match(text, /Превышение скорости на 15–30 км\/ч/);
   assert.match(text, /Дата: 19\.08\.2026/);
-  assert.match(text, /Сумма: <b>50 ₾<\/b>/);
+  assert.match(text, /Сумма без скидки: <b>50 ₾<\/b>/);
   assert.match(text, /Оплатить до: 18\.10\.2026 \(осталось 50 дней\)/);
 
   const one = renderEvent(
@@ -88,6 +130,14 @@ test("карточка штрафа собирается с русской ст�
     "A354OC797",
   );
   assert.match(one, /осталось 1 день\)/);
+});
+
+test("карточка оплаченного штрафа — без срока оплаты и без пояснений", () => {
+  const text = renderEvent({ type: "paid", protocolNo: FINE.protocolNo, fine: FINE }, "A354OC797");
+  assert.match(text, /<b>✅ Штраф оплачен<\/b> — <code>A354OC797<\/code>/);
+  // Заголовок уже всё сказал: срок оплаты и объяснения только сбивали бы с толку.
+  assert.doesNotMatch(text, /Оплатить до/);
+  assert.ok(text.trim().endsWith("Сумма без скидки: <b>50 ₾</b>"), "карточка кончается суммой");
 });
 
 test("адрес нарушения становится ссылкой в карты", () => {

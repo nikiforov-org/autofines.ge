@@ -6,7 +6,7 @@
  * Состояние (какие протоколы уже отправлены) лежит в KV под ключом "state".
  */
 
-import { fetchPlate, paymentUrl } from "./police.js";
+import { fetchPlate, isPaid, paymentUrl } from "./police.js";
 import { diffFines, renderEvent } from "./notify.js";
 import { geocodeCached } from "./geocode.js";
 import { callTelegram, sendMessage } from "./telegram.js";
@@ -36,6 +36,21 @@ const parsePlates = (raw) =>
     .map((plate) => String(plate).trim().toUpperCase())
     .filter(Boolean);
 
+/**
+ * Какие из найденных протоколов на самом деле оплачены. Шлюз спрашиваем только
+ * про те, что ещё не помечены оплаченными: обратно из оплаченных штраф не выходит.
+ * Неуверенный ответ шлюза (null) считаем «не оплачен» — лучше лишняя тревога,
+ * чем пропущенный штраф.
+ */
+async function findPaid(fines, plate, known) {
+  const paid = new Set();
+  for (const { protocolNo } of fines) {
+    if (!protocolNo) continue;
+    if (known[protocolNo]?.paid || (await isPaid(protocolNo, plate))) paid.add(protocolNo);
+  }
+  return paid;
+}
+
 /** Один проход проверки. Возвращает короткий отчёт для логов и ручного запуска. */
 export async function runCheck(env, overrides = {}) {
   const plates = parsePlates(env.PLATES);
@@ -50,14 +65,16 @@ export async function runCheck(env, overrides = {}) {
 
   const state = (await env.STATE.get(STATE_KEY, "json")) ?? {};
   const report = { today, plates: {}, sent: 0 };
-  let totalFines = 0;
+  let totalUnpaid = 0;
 
   for (const plate of plates) {
     const fines = await fetchPlate(plate);
-    totalFines += fines.length;
+    const paid = await findPaid(fines, plate, state[plate] ?? {});
+    totalUnpaid += fines.length - paid.size;
 
     const { events, known } = diffFines({
       fines,
+      paid,
       known: state[plate] ?? {},
       today,
       remindDays,
@@ -65,7 +82,9 @@ export async function runCheck(env, overrides = {}) {
     });
 
     for (const event of events) {
-      const payUrl = event.type === "gone" ? null : paymentUrl(event.protocolNo, plate);
+      // Оплачивать нечего ни у оплаченного, ни у пропавшего из базы.
+      const settled = event.type === "gone" || event.type === "paid";
+      const payUrl = settled ? null : paymentUrl(event.protocolNo, plate);
       const coords = event.fine?.protocolPlace
         ? await geocodeCached(env.STATE, event.fine.protocolPlace)
         : null;
@@ -76,10 +95,14 @@ export async function runCheck(env, overrides = {}) {
     if (Object.keys(known).length > 0) state[plate] = known;
     else delete state[plate];
 
-    report.plates[plate] = { found: fines.length, events: events.map((e) => e.type) };
+    report.plates[plate] = {
+      found: fines.length,
+      unpaid: fines.length - paid.size,
+      events: events.map((e) => e.type),
+    };
   }
 
-  if (flag(env.NOTIFY_EMPTY) && totalFines === 0) {
+  if (flag(env.NOTIFY_EMPTY) && totalUnpaid === 0) {
     await sendMessage(env, "✅ Проверка прошла: неоплаченных штрафов нет.");
     report.sent++;
   }
@@ -91,13 +114,17 @@ export async function runCheck(env, overrides = {}) {
 /**
  * Ручная проверка. В отличие от cron присылает все висящие штрафы, а не только
  * новые: кнопку жмут именно чтобы увидеть, что сейчас в системе и что можно
- * оплатить. Последним сообщением переприклеивается клавиатура.
+ * оплатить.
  */
 async function reportManualRun(env) {
   try {
     const report = await runCheck(env, { notifyAlways: true });
-    const found = Object.values(report.plates).reduce((sum, plate) => sum + plate.found, 0);
-    if (found === 0) await sendMessage(env, "✅ Неоплаченных штрафов нет.", null, KEYBOARD);
+    // Отвечаем сами, только если проверка промолчала: после карточек штрафов
+    // «неоплаченных нет» — лишняя строка. Заодно это единственное сообщение,
+    // к которому можно приложить клавиатуру: у карточек занято кнопкой оплаты.
+    if (report.sent === 0) {
+      await sendMessage(env, "✅ Неоплаченных штрафов нет.", null, KEYBOARD);
+    }
   } catch (error) {
     await sendMessage(
       env,
