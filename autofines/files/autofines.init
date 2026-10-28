@@ -1,0 +1,49 @@
+#!/bin/sh /etc/rc.common
+# autofines: штрафы МВД Грузии по госномеру → Telegram.
+
+START=99
+USE_PROCD=1
+
+NAME=autofines
+PROG=/usr/bin/autofines
+STATE_DIR=/etc/autofines
+# Сводка для страницы в LuCI — в памяти, флеш на каждую проверку не трогаем.
+RUN_DIR=/var/run/autofines
+
+start_service() {
+	local enabled token chat
+
+	config_load "$NAME"
+	config_get_bool enabled main enabled 0
+	config_get token main bot_token
+	config_get chat main chat_id
+
+	[ "$enabled" = 1 ] || return 0
+	if [ -z "$token" ] || [ -z "$chat" ]; then
+		echo "$NAME: не заданы bot_token и chat_id" >&2
+		logger -t "$NAME" -p daemon.err "не заданы bot_token и chat_id, бот не запущен"
+		return 1
+	fi
+
+	# Бот работает не от root: ему нужны только свой конфиг и каталоги состояния.
+	mkdir -p "$STATE_DIR" "$RUN_DIR"
+	chown -R "$NAME:$NAME" "$STATE_DIR" "$RUN_DIR"
+	chgrp "$NAME" "/etc/config/$NAME"
+	chmod 0640 "/etc/config/$NAME"
+
+	procd_open_instance
+	procd_set_param command "$PROG" daemon
+	# Настройки бот читает сам, и без этого procd не увидел бы разницы: reload
+	# после «Сохранить и применить» в LuCI оставил бы старый процесс.
+	procd_set_param file "/etc/config/$NAME"
+	procd_set_param user "$NAME"
+	# Без предела попыток: роутер работает без присмотра.
+	procd_set_param respawn 3600 30 0
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+	procd_close_instance
+}
+
+service_triggers() {
+	procd_add_reload_trigger "$NAME"
+}

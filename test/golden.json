@@ -1,0 +1,649 @@
+{
+ "render": [
+  {
+   "name": "new",
+   "event": {
+    "type": "new",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 50,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>🚨 Новый штраф</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 50 дней)"
+  },
+  {
+   "name": "repeat",
+   "event": {
+    "type": "repeat",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 50,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>🔁 Штраф не оплачен</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 50 дней)"
+  },
+  {
+   "name": "remind",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 50,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 50 дней)"
+  },
+  {
+   "name": "paid",
+   "event": {
+    "type": "paid",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 50,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>✅ Штраф оплачен</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>"
+  },
+  {
+   "name": "days-0",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 0,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 0 дней)"
+  },
+  {
+   "name": "days-1",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 1,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 1 день)"
+  },
+  {
+   "name": "days-2",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 2,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 2 дня)"
+  },
+  {
+   "name": "days-5",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 5,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 5 дней)"
+  },
+  {
+   "name": "days-11",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 11,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 11 дней)"
+  },
+  {
+   "name": "days-12",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 12,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 12 дней)"
+  },
+  {
+   "name": "days-21",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 21,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 21 день)"
+  },
+  {
+   "name": "days-22",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 22,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 22 дня)"
+  },
+  {
+   "name": "days-25",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 25,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 25 дней)"
+  },
+  {
+   "name": "days-101",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 101,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 101 день)"
+  },
+  {
+   "name": "days-111",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 111,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 111 дней)"
+  },
+  {
+   "name": "days-112",
+   "event": {
+    "type": "remind",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 112,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>⏰ Скоро истекает срок оплаты</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 112 дней)"
+  },
+  {
+   "name": "gone",
+   "event": {
+    "type": "gone",
+    "protocolNo": "კვ000474970"
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "✅ Штраф <code>კვ000474970</code> по <b>AB123CD</b> пропал из базы МВД — скорее всего, оплачен."
+  },
+  {
+   "name": "coords",
+   "event": {
+    "type": "new",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 50,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": {
+    "lat": 41.6148394,
+    "lon": 41.5959743
+   },
+   "text": "<b>🚨 Новый штраф</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=41.6148394%2C41.5959743\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 50 дней)"
+  },
+  {
+   "name": "no-place",
+   "event": {
+    "type": "new",
+    "protocolNo": "X",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": null,
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 50,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "A1",
+   "coords": null,
+   "text": "<b>🚨 Новый штраф</b> — <code>A1</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: —\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 50 дней)"
+  },
+  {
+   "name": "html",
+   "event": {
+    "type": "new",
+    "protocolNo": "X",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "<b>боом</b> & co",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 50,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "A1",
+   "coords": null,
+   "text": "<b>🚨 Новый штраф</b> — <code>A1</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%3Cb%3E%D0%B1%D0%BE%D0%BE%D0%BC%3C%2Fb%3E%20%26%20co%2C%20Georgia\">&lt;b&gt;боом&lt;/b&gt; &amp; co</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 50 дней)"
+  },
+  {
+   "name": "unknown-law",
+   "event": {
+    "type": "new",
+    "protocolNo": "X",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "999-9-9",
+     "protocolLawDescription": "",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 50,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>🚨 Новый штраф</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: 999-9-9\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026 (осталось 50 дней)"
+  },
+  {
+   "name": "no-amount-date",
+   "event": {
+    "type": "new",
+    "protocolNo": "X",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": null,
+     "lastDate": null,
+     "remainingDays": 50,
+     "protocolDate": "2026-08-20",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>🚨 Новый штраф</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 20.08.2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>— ₾</b>"
+  },
+  {
+   "name": "bad-date",
+   "event": {
+    "type": "new",
+    "protocolNo": "X",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "19/08/2026",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": "50",
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   "plate": "AB123CD",
+   "coords": null,
+   "text": "<b>🚨 Новый штраф</b> — <code>AB123CD</code>\n\nПротокол: <code>კვ000474970</code>\nДата: 19/08/2026\nМесто: <a href=\"https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia\">ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2</a>\nСтатья: Превышение скорости на 15–30 км/ч\n<i>ასკ 125-ე მუხლის პირველი ნაწილი</i>\nСумма без скидки: <b>50 ₾</b>\nОплатить до: 18.10.2026"
+  }
+ ],
+ "maps": [
+  {
+   "place": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+   "query": "ანწუხელიძის ქუჩა N83, ბათუმი, Georgia",
+   "url": "https://www.google.com/maps/search/?api=1&query=%E1%83%90%E1%83%9C%E1%83%AC%E1%83%A3%E1%83%AE%E1%83%94%E1%83%9A%E1%83%98%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20N83%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia",
+   "parsed": {
+    "city": "ბათუმი",
+    "street": "83 ანწუხელიძის ქუჩა",
+    "cleaned": "ქ. ბათუმი ანწუხელიძის ქუჩა N83"
+   }
+  },
+  {
+   "place": "ქ. თბილისი რუსთაველის გამზირი",
+   "query": "რუსთაველის გამზირი, თბილისი, Georgia",
+   "url": "https://www.google.com/maps/search/?api=1&query=%E1%83%A0%E1%83%A3%E1%83%A1%E1%83%97%E1%83%90%E1%83%95%E1%83%94%E1%83%9A%E1%83%98%E1%83%A1%20%E1%83%92%E1%83%90%E1%83%9B%E1%83%96%E1%83%98%E1%83%A0%E1%83%98%2C%20%E1%83%97%E1%83%91%E1%83%98%E1%83%9A%E1%83%98%E1%83%A1%E1%83%98%2C%20Georgia",
+   "parsed": {
+    "city": "თბილისი",
+    "street": "რუსთაველის გამზირი",
+    "cleaned": "ქ. თბილისი რუსთაველის გამზირი"
+   }
+  },
+  {
+   "place": "Rustaveli Ave 12",
+   "query": "Rustaveli Ave 12, Georgia",
+   "url": "https://www.google.com/maps/search/?api=1&query=Rustaveli%20Ave%2012%2C%20Georgia",
+   "parsed": {
+    "city": "",
+    "street": "Rustaveli Ave 12",
+    "cleaned": "Rustaveli Ave 12"
+   }
+  },
+  {
+   "place": "Tbilisi, Georgia",
+   "query": "Tbilisi, Georgia",
+   "url": "https://www.google.com/maps/search/?api=1&query=Tbilisi%2C%20Georgia",
+   "parsed": {
+    "city": "",
+    "street": "Tbilisi, Georgia",
+    "cleaned": "Tbilisi, Georgia"
+   }
+  },
+  {
+   "place": "ქ. ბათუმი  გორგასალის   ქუჩა n12a (ვიდეო) ",
+   "query": "გორგასალის ქუჩა n12a, ბათუმი, Georgia",
+   "url": "https://www.google.com/maps/search/?api=1&query=%E1%83%92%E1%83%9D%E1%83%A0%E1%83%92%E1%83%90%E1%83%A1%E1%83%90%E1%83%9A%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%20n12a%2C%20%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%2C%20Georgia",
+   "parsed": {
+    "city": "ბათუმი",
+    "street": "გორგასალის ქუჩა n12a",
+    "cleaned": "ქ. ბათუმი გორგასალის ქუჩა n12a"
+   }
+  },
+  {
+   "place": "ქ. ქუთაისი N5 ჭავჭავაძის ქუჩა",
+   "query": "N5 ჭავჭავაძის ქუჩა, ქუთაისი, Georgia",
+   "url": "https://www.google.com/maps/search/?api=1&query=N5%20%E1%83%AD%E1%83%90%E1%83%95%E1%83%AD%E1%83%90%E1%83%95%E1%83%90%E1%83%AB%E1%83%98%E1%83%A1%20%E1%83%A5%E1%83%A3%E1%83%A9%E1%83%90%2C%20%E1%83%A5%E1%83%A3%E1%83%97%E1%83%90%E1%83%98%E1%83%A1%E1%83%98%2C%20Georgia",
+   "parsed": {
+    "city": "ქუთაისი",
+    "street": "5 ჭავჭავაძის ქუჩა",
+    "cleaned": "ქ. ქუთაისი N5 ჭავჭავაძის ქუჩა"
+   }
+  },
+  {
+   "place": "",
+   "query": ", Georgia",
+   "url": "https://www.google.com/maps/search/?api=1&query=%2C%20Georgia",
+   "parsed": {
+    "city": "",
+    "street": "",
+    "cleaned": ""
+   }
+  },
+  {
+   "place": null,
+   "query": ", Georgia",
+   "url": "https://www.google.com/maps/search/?api=1&query=%2C%20Georgia",
+   "parsed": {
+    "city": "",
+    "street": "",
+    "cleaned": ""
+   }
+  }
+ ],
+ "payment": [
+  {
+   "no": "კვ000474970",
+   "plate": "AB123CD",
+   "url": "https://mpi.gc.ge/page1/?lang_code=ka&page_id=0B849B8B559D32AE7E2F136C180F5983&merch_id=5ACF0AC08EA8263A576BDC08B6E25DED&back_url_s=https://police.ge/protocol/success.php&back_url_f=https://police.ge/protocol/fail.php?id=%E1%83%99%E1%83%95000474970&o.protocolId=%E1%83%99%E1%83%95000474970&o.vehicleNumber=AB123CD&o.resourceAlias=1"
+  },
+  {
+   "no": "ZZ 123/4&5",
+   "plate": "AB-12 CD",
+   "url": "https://mpi.gc.ge/page1/?lang_code=ka&page_id=0B849B8B559D32AE7E2F136C180F5983&merch_id=5ACF0AC08EA8263A576BDC08B6E25DED&back_url_s=https://police.ge/protocol/success.php&back_url_f=https://police.ge/protocol/fail.php?id=ZZ%20123%2F4%265&o.protocolId=ZZ%20123%2F4%265&o.vehicleNumber=AB-12%20CD&o.resourceAlias=1"
+  }
+ ],
+ "diff": {
+  "events": [
+   {
+    "type": "new",
+    "protocolNo": "კვ000474970",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 50,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "კვ000474970"
+    }
+   },
+   {
+    "type": "remind",
+    "protocolNo": "B2",
+    "fine": {
+     "protocolAuto": "AB123CD",
+     "violationDate": "2026-08-19",
+     "protocolPlace": "ქ. ბათუმი ანწუხელიძის ქუჩა N83 (წრიული) 2",
+     "protocolLaw": "125-1-0",
+     "protocolLawDescription": "ასკ 125-ე მუხლის პირველი ნაწილი",
+     "protocolAmount": 50,
+     "lastDate": "2026-10-18",
+     "remainingDays": 3,
+     "protocolDate": "2026-08-19",
+     "protocolNo": "B2"
+    }
+   },
+   {
+    "type": "gone",
+    "protocolNo": "OLD"
+   }
+  ],
+  "known": {
+   "B2": {
+    "firstSeen": "2026-08-02",
+    "remindedAt": "2026-08-29",
+    "amount": 50,
+    "lastDate": "2026-10-18"
+   },
+   "კვ000474970": {
+    "firstSeen": "2026-08-29",
+    "remindedAt": null,
+    "amount": 50,
+    "lastDate": "2026-10-18"
+   }
+  }
+ }
+}

@@ -1,0 +1,14 @@
+{
+	"admin/services/autofines": {
+		"title": "Штрафы МВД",
+		"order": 90,
+		"action": {
+			"type": "view",
+			"path": "autofines"
+		},
+		"depends": {
+			"acl": [ "luci-app-autofines" ],
+			"uci": { "autofines": true }
+		}
+	}
+}

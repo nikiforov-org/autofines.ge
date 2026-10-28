@@ -1,0 +1,25 @@
+{
+	"luci-app-autofines": {
+		"description": "Настройки и состояние autofines",
+		"read": {
+			"file": {
+				"/tmp/run/autofines/status.json": [ "read" ],
+				"/var/run/autofines/status.json": [ "read" ]
+			},
+			"ubus": {
+				"file": [ "read" ],
+				"service": [ "list" ]
+			},
+			"uci": [ "autofines" ]
+		},
+		"write": {
+			"file": {
+				"/usr/bin/autofines setup": [ "exec" ]
+			},
+			"ubus": {
+				"file": [ "exec" ]
+			},
+			"uci": [ "autofines" ]
+		}
+	}
+}
