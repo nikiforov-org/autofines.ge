@@ -62,9 +62,24 @@ with sync_playwright() as p:
     check("кривой ID чата подсвечен", field("chat_id").locator(".cbi-input-invalid").count() > 0)
     page.screenshot(path=f"{out}/2-invalid.png", full_page=True)
 
-    def fill_and_apply():
+    def no_plate():
         field("bot_token").locator("input").fill("123456789:fake-token-for-tests-only-0000000")
         field("chat_id").locator("input").fill("1001")
+        page.locator(".cbi-page-actions .cbi-button-apply").first.click()
+        expect(page.get_by_text("Добавьте хотя бы один госномер")).to_be_visible(timeout=10000)
+        page.screenshot(path=f"{out}/3-no-plate.png", full_page=True)
+        page.get_by_role("button", name="Dismiss").click()
+        expect(page.get_by_text("выключена", exact=True)).to_be_visible()
+        # Отказ сохранить LuCI показывает окном, а в консоль он всё равно уходит
+        # необработанным reject — так LuCI ведёт себя с любой ошибкой сохранения.
+        errors.clear()
+
+    step("включить без госномера не даёт: окно с объяснением, служба не тронута", no_plate)
+
+    def fill_and_apply():
+        # Заведомо несуществующий номер: police.ge настоящий, чужой номер дёргать незачем.
+        field("plate").locator("input").last.fill("TEST000")
+        field("plate").locator("input").last.press("Enter")
         field("interval").locator(".cbi-dropdown").click()
         field("interval").locator("li[data-value='15']").first.click()
         page.get_by_text("Дополнительно", exact=True).click()
@@ -77,7 +92,7 @@ with sync_playwright() as p:
     def status_updates():
         expect(page.get_by_text("на связи", exact=True)).to_be_visible(timeout=60000)
         expect(page.get_by_text("(по кнопке)")).to_be_visible(timeout=60000)
-        page.screenshot(path=f"{out}/3-applied.png", full_page=True)
+        page.screenshot(path=f"{out}/4-applied.png", full_page=True)
 
     step("состояние обновилось: Telegram на связи, нажатие кнопки обработано", status_updates)
 
@@ -85,7 +100,7 @@ with sync_playwright() as p:
         page.get_by_text("Основное", exact=True).click()
         page.get_by_role("button", name="Настроить чат").click()
         expect(page.get_by_text("В чат отправлены клавиатура")).to_be_visible(timeout=30000)
-        page.screenshot(path=f"{out}/4-setup.png", full_page=True)
+        page.screenshot(path=f"{out}/5-setup.png", full_page=True)
 
     step("«Настроить чат» отработал", setup_chat)
 

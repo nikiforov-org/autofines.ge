@@ -60,6 +60,7 @@ else
 		uci set autofines.main.enabled=1
 		uci set autofines.main.bot_token=123456789:fake-token-for-tests-only-0000000
 		uci set autofines.main.chat_id=1001
+		uci add_list autofines.main.plate=TEST000
 		uci set autofines.main.api=http://$RUN-tg:8081
 		uci commit autofines
 		service autofines restart > /dev/null 2>&1

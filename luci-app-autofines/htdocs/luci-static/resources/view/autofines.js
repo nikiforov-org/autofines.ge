@@ -84,7 +84,7 @@ function renderStatus(node, state) {
 	let service = _('работает');
 	if (!state.running)
 		service = enabled
-			? E('span', { 'style': 'color:#c00' }, [ _('не запущена: нужны токен бота и ID чата, подробности — logread -e autofines') ])
+			? E('span', { 'style': 'color:#c00' }, [ _('не запущена: нужны токен бота, ID чата и госномер, подробности — logread -e autofines') ])
 			: _('выключена');
 
 	let telegram = '—';
@@ -134,6 +134,16 @@ return view.extend({
 	render([ state ]) {
 		const m = new form.Map('autofines');
 		const s = m.section(form.NamedSection, 'main', 'autofines');
+
+		// Пустой список у DynamicList проверке не подлежит — валидатор зовётся
+		// на каждый номер, а номеров нет. Поэтому требование «хотя бы один номер
+		// у включённого бота» — при сохранении всей секции.
+		s.parse = function() {
+			const plates = this.formvalue('main', 'plate');
+			if (this.formvalue('main', 'enabled') == '1' && !plates?.length)
+				return Promise.reject(new Error(_('Добавьте хотя бы один госномер: без него бот не запустится.')));
+			return form.NamedSection.prototype.parse.apply(this, arguments);
+		};
 		s.tab('general', _('Основное'));
 		s.tab('notify', _('Уведомления'));
 		s.tab('advanced', _('Дополнительно'));
