@@ -1,12 +1,12 @@
 #!/bin/sh
 # Тесты в Docker, на OpenWrt 25.12.6:
 #   1. юнит-тесты на ucode (test/test_*.uc) прямо из исходников;
-#   2. установка собранных dist/*.apk в чистый контейнер с LuCI и включение
-#      службы — в браузере через страницу LuCI (test/luci_ui.py), если есть
-#      образ Playwright, иначе через uci;
+#   2. установка собранного dist/luci-app-autofines.ge-*.apk в чистый контейнер
+#      с LuCI и включение службы — в браузере через страницу LuCI
+#      (test/luci_ui.py), если есть образ Playwright, иначе через uci;
 #   3. служба под пользователем autofines и её разговор с поддельным Bot API
 #      (test/fake_telegram.py); police.ge при этом настоящий.
-# Шаги 2–3 пропускаются, если пакеты не собраны (./build.sh).
+# Шаги 2–3 пропускаются, если пакет не собран (./build.sh).
 set -eu
 cd "$(dirname "$0")"
 
@@ -32,18 +32,17 @@ docker exec "$RUN" sh -c 'apk update > /dev/null && apk add ucode ucode-mod-fs u
 
 failed=0
 for t in test/test_*.uc; do
-	docker exec "$RUN" ucode -L '/src/autofines/files/ucode/*.uc' -L '/src/test/*.uc' "/src/$t" | grep -v '^✔' || failed=1
+	docker exec "$RUN" ucode -L '/src/luci-app-autofines.ge/files/ucode/*.uc' -L '/src/test/*.uc' "/src/$t" | grep -v '^✔' || failed=1
 done
 
-bot=$(ls dist/autofines-*.apk 2> /dev/null | tail -1)
-luci=$(ls dist/luci-app-autofines-*.apk 2> /dev/null | tail -1)
-if [ -z "$bot" ] || [ -z "$luci" ]; then
-	echo "# пакеты не собраны — установку не проверяю (./build.sh)"
+pkg=$(ls dist/luci-app-autofines.ge-*.apk 2> /dev/null | tail -1)
+if [ -z "$pkg" ]; then
+	echo "# пакет не собран — установку не проверяю (./build.sh)"
 	exit $failed
 fi
 
 docker exec "$RUN" sh -euc "
-	apk add --allow-untrusted /src/$bot /src/$luci > /dev/null
+	apk add --allow-untrusted /src/$pkg > /dev/null
 	printf 'test\ntest\n' | passwd root > /dev/null 2>&1
 "
 

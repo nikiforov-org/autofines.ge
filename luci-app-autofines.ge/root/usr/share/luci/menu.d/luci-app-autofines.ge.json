@@ -7,7 +7,7 @@
 			"path": "autofines"
 		},
 		"depends": {
-			"acl": [ "luci-app-autofines" ],
+			"acl": [ "luci-app-autofines.ge" ],
 			"uci": { "autofines": true }
 		}
 	}

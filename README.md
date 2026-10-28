@@ -116,9 +116,9 @@ Nominatim просит не ходить чаще раза в секунду. Е
 
 ## Установка на роутер
 
-Два пакета под OpenWrt 25.12 (проверены на 25.12.6, ASUS RT-AX59U,
-`mediatek/filogic`): `autofines` — сам бот, `luci-app-autofines` — его страница в
-LuCI. Бинарников в них нет, так что подойдёт любой роутер на 25.12; зависимости
+Один пакет `luci-app-autofines.ge` под OpenWrt 25.12 (проверен на 25.12.6,
+ASUS RT-AX59U, `mediatek/filogic`): в нём и бот, и его страница в LuCI.
+Бинарников в нём нет, так что подойдёт любой роутер на 25.12; зависимости
 (`ucode` и его модули, `ca-bundle`, `luci-base`) apk подтянет из штатных фидов.
 
 1. Создать бота у [@BotFather](https://t.me/BotFather) → получить токен. Узнать
@@ -127,12 +127,12 @@ LuCI. Бинарников в них нет, так что подойдёт лю
    curl -s "https://api.telegram.org/bot<ТОКЕН>/deleteWebhook"   # если бот раньше жил на вебхуке
    curl -s "https://api.telegram.org/bot<ТОКЕН>/getUpdates" | grep -o '"chat":{"id":[-0-9]*'
    ```
-2. Собрать пакеты (`./build.sh`, нужен Docker) и поставить на роутер:
+2. Собрать пакет (`./build.sh`, нужен Docker) и поставить на роутер:
    ```sh
-   scp -O dist/*.apk root@192.168.1.1:/tmp/
-   ssh root@192.168.1.1 'apk add --allow-untrusted /tmp/autofines-*.apk /tmp/luci-app-autofines-*.apk'
+   scp -O dist/luci-app-autofines.ge-1.0.0-r1.apk root@192.168.1.1:/tmp/
+   ssh root@192.168.1.1 apk add --allow-untrusted /tmp/luci-app-autofines.ge-1.0.0-r1.apk
    ```
-   `--allow-untrusted` — потому что пакеты подписаны не ключом OpenWrt.
+   `--allow-untrusted` — потому что пакет подписан не ключом OpenWrt.
 3. В LuCI: **Службы → Штрафы МВД**. Вписать токен, ID чата и госномер, отметить
    «Включить», нажать «Сохранить и применить». Блок «Состояние» вверху страницы
    показывает, работает ли служба, есть ли связь с Telegram и чем кончилась
@@ -178,12 +178,12 @@ logread -e autofines        # «запущен: …» и итоги провер
 ## Разработка
 
 ```sh
-./build.sh     # оба .apk в SDK OpenWrt 25.12.6 для mediatek/filogic → dist/
+./build.sh     # .apk в SDK OpenWrt 25.12.6 для mediatek/filogic → dist/
 ./test.sh      # 91 тест на ucode, установка в чистый OpenWrt, страница LuCI в браузере
 ```
 
 Оба скрипта работают в Docker и роутер не трогают. `test.sh` сначала гоняет
-тесты из `test/` прямо по исходникам, а если пакеты собраны — ставит их в чистый
+тесты из `test/` прямо по исходникам, а если пакет собран — ставит его в чистый
 контейнер `openwrt/rootfs:x86-64-25.12.6` с LuCI и проверяет всё целиком:
 
 - страницу — в headless Chromium (`test/luci_ui.py`): вход, подсветку кривых
@@ -240,8 +240,8 @@ dry-run, служба, кнопка, плановая проверка.
   оплате быстро, но каждая проверка открывает и бросает платёжную сессию на
   `mpi.gc.ge`. Если это смущает — `interval` побольше.
 - **Прошивка роутера.** `sysupgrade` сохраняет конфиг и состояние
-  (`/etc/autofines/` — в `keep.d`), но сами пакеты после прошивки нужно поставить
-  заново: штатные фиды о них не знают.
+  (`/etc/autofines/` — в `keep.d`), но сам пакет после прошивки нужно поставить
+  заново: штатные фиды о нём не знают.
 - **Только штрафы МВД.** Парковка Тбилиси и Батуми, а также экологический надзор
   сюда не попадают: они живут на [protocols.ge](https://protocols.ge) и
   [parking.tbilisi.gov.ge](https://parking.tbilisi.gov.ge) за reCAPTCHA v3.
